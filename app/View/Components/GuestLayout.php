@@ -7,6 +7,8 @@ use Illuminate\View\View;
 
 class GuestLayout extends Component
 {
+    public function __construct(public string $title = 'Systex Financeiro') {}
+
     /**
      * Get the view / contents that represents the component.
      */

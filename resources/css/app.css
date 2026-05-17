@@ -1,3 +1,94 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    html {
+        color-scheme: dark;
+    }
+
+    body {
+        @apply bg-[#0b0b0b] text-white antialiased;
+    }
+
+    ::selection {
+        @apply bg-red-500/30 text-white;
+    }
+}
+
+@layer components {
+    .sx-shell {
+        background:
+            radial-gradient(circle at 82% 12%, rgba(255, 42, 42, 0.16), transparent 26rem),
+            radial-gradient(circle at 6% 82%, rgba(255, 42, 42, 0.10), transparent 24rem),
+            linear-gradient(135deg, #0b0b0b 0%, #111111 48%, #0b0b0b 100%);
+    }
+
+    .sx-panel {
+        @apply border border-white/[0.06] bg-white/[0.035] shadow-2xl shadow-black/40 backdrop-blur-xl;
+    }
+
+    .sx-card {
+        @apply rounded-xl border border-white/[0.06] bg-[#161616]/80 shadow-xl shadow-black/30 transition duration-200;
+    }
+
+    .sx-card-hover {
+        @apply hover:-translate-y-0.5 hover:border-red-500/25 hover:shadow-red-500/10;
+    }
+
+    .sx-input {
+        @apply h-12 w-full rounded-lg border border-white/[0.08] bg-[#111111] px-4 text-sm text-white placeholder:text-zinc-600 shadow-inner shadow-black/20 transition focus:border-red-500/70 focus:ring-4 focus:ring-red-500/10;
+    }
+
+    .sx-select {
+        @apply h-12 w-full rounded-lg border border-white/[0.08] bg-[#111111] px-4 text-sm text-white shadow-inner shadow-black/20 transition focus:border-red-500/70 focus:ring-4 focus:ring-red-500/10;
+    }
+
+    .sx-textarea {
+        @apply w-full rounded-lg border border-white/[0.08] bg-[#111111] px-4 py-3 text-sm text-white placeholder:text-zinc-600 shadow-inner shadow-black/20 transition focus:border-red-500/70 focus:ring-4 focus:ring-red-500/10;
+    }
+
+    .sx-label {
+        @apply mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-zinc-400;
+    }
+
+    .sx-button {
+        @apply inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-gradient-to-b from-[#ff3b3b] to-[#d70f0f] px-5 text-sm font-bold text-white shadow-lg shadow-red-500/20 transition hover:-translate-y-0.5 hover:shadow-red-500/30 focus:outline-none focus:ring-4 focus:ring-red-500/20;
+    }
+
+    .sx-button-secondary {
+        @apply inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.04] px-5 text-sm font-bold text-zinc-200 transition hover:border-red-500/40 hover:bg-red-500/10 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-500/10;
+    }
+
+    .sx-button-danger {
+        @apply inline-flex h-11 items-center justify-center rounded-lg border border-red-500/45 bg-red-500/10 px-5 text-sm font-bold text-red-200 transition hover:bg-red-500 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-500/20;
+    }
+
+    .sx-badge {
+        @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-bold;
+    }
+
+    .sx-table {
+        @apply min-w-full divide-y divide-white/[0.06] text-left text-sm;
+    }
+
+    .sx-table thead {
+        @apply bg-white/[0.03] text-xs uppercase tracking-[0.16em] text-zinc-500;
+    }
+
+    .sx-table th {
+        @apply px-5 py-4 font-bold;
+    }
+
+    .sx-table td {
+        @apply px-5 py-4 align-middle;
+    }
+
+    .sx-table tbody {
+        @apply divide-y divide-white/[0.06];
+    }
+
+    .sx-table tbody tr {
+        @apply transition hover:bg-white/[0.035];
+    }
+}
