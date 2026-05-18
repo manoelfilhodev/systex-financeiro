@@ -104,9 +104,12 @@ class DashboardController extends Controller
                 'labelsDias' => $labelsDias,
                 'entradasPorDia' => $entradasPorDia,
                 'saidasPorDia' => $saidasPorDia,
+                'saldoAcumulado' => $saldoAcumuladoPorDia,
                 'saldoAcumuladoPorDia' => $saldoAcumuladoPorDia,
+                'saidasPorCategoria' => $saidasPorCategoria->pluck('categoria_nome')->values(),
                 'categoriasSaida' => $saidasPorCategoria->pluck('categoria_nome')->values(),
                 'valoresPorCategoria' => $saidasPorCategoria->pluck('total')->map(fn ($total) => round((float) $total, 2))->values(),
+                'margemFinanceira' => $margemPercentual,
                 'margemPercentual' => $margemPercentual,
             ],
         ]);

@@ -106,6 +106,34 @@ class FinanceiroFlowTest extends TestCase
             });
     }
 
+    public function test_dashboard_renderiza_containers_e_aliases_seguros_dos_graficos(): void
+    {
+        $user = User::factory()->create([
+            'plan' => 'premium',
+            'subscription_status' => 'active',
+            'premium_until' => now()->addMonth(),
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('dashboard', ['mes' => '2026-05']))
+            ->assertOk()
+            ->assertSee('id="dashboard-charts-data"', false)
+            ->assertSee('id="cashflowChart"', false)
+            ->assertSee('id="categoryChart"', false)
+            ->assertSee('id="balanceChart"', false)
+            ->assertSee('id="healthGauge"', false)
+            ->assertViewHas('chartData', function (array $chartData): bool {
+                return array_key_exists('entradasPorDia', $chartData)
+                    && array_key_exists('saidasPorCategoria', $chartData)
+                    && array_key_exists('saldoAcumulado', $chartData)
+                    && array_key_exists('margemFinanceira', $chartData)
+                    && is_iterable($chartData['entradasPorDia'])
+                    && is_iterable($chartData['saidasPorCategoria'])
+                    && is_iterable($chartData['saldoAcumulado'])
+                    && is_numeric($chartData['margemFinanceira']);
+            });
+    }
+
     public function test_lancamento_nao_aceita_categoria_de_outro_usuario(): void
     {
         $user = User::factory()->create();

@@ -120,9 +120,7 @@
     </section>
 
     @if ($hasPremiumAccess)
-        <script id="dashboard-charts-data" type="application/json">
-            @json($chartData)
-        </script>
+        <script id="dashboard-charts-data" type="application/json">@json($chartData)</script>
 
         <div class="mt-6 grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
             <section class="sx-card sx-card-hover overflow-hidden p-5">
@@ -133,7 +131,7 @@
                     </div>
                     <span class="sx-badge sx-badge-theme">Premium</span>
                 </div>
-                <div id="chart-fluxo-financeiro" class="min-h-[330px]"></div>
+                <div id="cashflowChart" class="min-h-[330px]"></div>
             </section>
 
             <section class="sx-card sx-card-hover overflow-hidden p-5">
@@ -144,7 +142,7 @@
                     </div>
                     <span class="sx-badge sx-badge-theme">Donut</span>
                 </div>
-                <div id="chart-categorias" class="min-h-[330px]"></div>
+                <div id="categoryChart" class="min-h-[330px]"></div>
             </section>
 
             <section class="sx-card sx-card-hover overflow-hidden p-5">
@@ -155,7 +153,7 @@
                     </div>
                     <span class="sx-badge sx-badge-theme">Acumulado</span>
                 </div>
-                <div id="chart-saldo-acumulado" class="min-h-[330px]"></div>
+                <div id="balanceChart" class="min-h-[330px]"></div>
             </section>
 
             <section class="sx-card sx-card-hover overflow-hidden p-5">
@@ -166,7 +164,7 @@
                     </div>
                     <span class="sx-badge sx-badge-theme">Gauge</span>
                 </div>
-                <div id="chart-saude-financeira" class="min-h-[330px]"></div>
+                <div id="healthGauge" class="min-h-[330px]"></div>
             </section>
         </div>
     @else

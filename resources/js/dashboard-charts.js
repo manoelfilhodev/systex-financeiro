@@ -3,6 +3,8 @@ const moneyFormatter = new Intl.NumberFormat('pt-BR', {
     currency: 'BRL',
 });
 
+let dashboardChartsStarted = false;
+
 const readTheme = () => {
     const styles = getComputedStyle(document.body);
 
@@ -12,11 +14,75 @@ const readTheme = () => {
         text: styles.getPropertyValue('--sx-text').trim() || '#ffffff',
         muted: styles.getPropertyValue('--sx-muted').trim() || '#b5b5b5',
         border: styles.getPropertyValue('--sx-border').trim() || 'rgba(255,255,255,.08)',
-        glow: styles.getPropertyValue('--sx-primary-glow').trim() || 'rgba(255,42,42,.25)',
         success: styles.getPropertyValue('--sx-success').trim() || '#34d399',
         danger: styles.getPropertyValue('--sx-danger').trim() || '#f87171',
         surface: styles.getPropertyValue('--sx-surface').trim() || '#111111',
     };
+};
+
+const arrayValue = (value) => (Array.isArray(value) ? value : []);
+
+const numericArray = (value) => arrayValue(value).map((item) => {
+    const number = Number(item);
+
+    return Number.isFinite(number) ? number : 0;
+});
+
+const normalizeSeries = (value, labels) => {
+    const series = numericArray(value);
+    const size = Math.max(labels.length, series.length);
+
+    return Array.from({ length: size }, (_, index) => series[index] ?? 0);
+};
+
+const safeMargin = (value) => {
+    const margin = Number(value ?? 0);
+
+    return Number.isFinite(margin) ? margin : 0;
+};
+
+const parseDashboardData = () => {
+    const root = document.getElementById('dashboard-charts-data');
+
+    if (!root) {
+        return null;
+    }
+
+    try {
+        return JSON.parse(root.textContent || '{}') || {};
+    } catch (error) {
+        console.warn('[Systex] Dashboard chart data is invalid.', error);
+
+        return {};
+    }
+};
+
+const chartElement = (...selectors) => {
+    for (const selector of selectors) {
+        const element = document.querySelector(selector);
+
+        if (element) {
+            return element;
+        }
+    }
+
+    return null;
+};
+
+const mountChart = (ApexCharts, element, options) => {
+    if (!element) {
+        return;
+    }
+
+    try {
+        element.innerHTML = '';
+        const chart = new ApexCharts(element, options);
+        Promise.resolve(chart.render()).catch((error) => {
+            console.warn('[Systex] Chart render promise failed.', error);
+        });
+    } catch (error) {
+        console.warn('[Systex] Chart render failed.', error);
+    }
 };
 
 const baseOptions = (theme) => ({
@@ -30,6 +96,16 @@ const baseOptions = (theme) => ({
             speed: 650,
         },
         fontFamily: 'Figtree, ui-sans-serif, system-ui, sans-serif',
+    },
+    noData: {
+        text: 'Sem dados no período',
+        align: 'center',
+        verticalAlign: 'middle',
+        style: {
+            color: theme.muted,
+            fontSize: '13px',
+            fontFamily: 'Figtree, ui-sans-serif, system-ui, sans-serif',
+        },
     },
     grid: {
         borderColor: theme.border,
@@ -46,7 +122,7 @@ const baseOptions = (theme) => ({
             fontFamily: 'Figtree, ui-sans-serif, system-ui, sans-serif',
         },
         y: {
-            formatter: (value) => moneyFormatter.format(value),
+            formatter: (value) => moneyFormatter.format(Number(value) || 0),
         },
     },
     dataLabels: { enabled: false },
@@ -73,41 +149,45 @@ const baseOptions = (theme) => ({
             style: {
                 colors: theme.muted,
             },
-            formatter: (value) => moneyFormatter.format(value),
+            formatter: (value) => moneyFormatter.format(Number(value) || 0),
         },
     },
 });
 
-const mountChart = (ApexCharts, selector, options) => {
-    const element = document.querySelector(selector);
-
-    if (!element) {
-        return null;
-    }
-
-    element.innerHTML = '';
-
-    const chart = new ApexCharts(element, options);
-    chart.render();
-
-    return chart;
-};
-
 const initDashboardCharts = async () => {
-    const root = document.getElementById('dashboard-charts-data');
-
-    if (!root) {
+    if (dashboardChartsStarted) {
         return;
     }
 
-    const { default: ApexCharts } = await import('apexcharts');
+    const data = parseDashboardData();
 
-    const data = JSON.parse(root.textContent || '{}');
+    if (!data) {
+        return;
+    }
+
+    dashboardChartsStarted = true;
+
+    let ApexCharts;
+
+    try {
+        ({ default: ApexCharts } = await import('apexcharts'));
+    } catch (error) {
+        console.warn('[Systex] ApexCharts could not be loaded.', error);
+
+        return;
+    }
+
     const theme = readTheme();
     const shared = baseOptions(theme);
-    const labelsDias = data.labelsDias || [];
+    const labelsDias = arrayValue(data.labelsDias);
+    const entradasPorDia = normalizeSeries(data.entradasPorDia, labelsDias);
+    const saidasPorDia = normalizeSeries(data.saidasPorDia, labelsDias);
+    const saldoAcumulado = normalizeSeries(data.saldoAcumulado ?? data.saldoAcumuladoPorDia, labelsDias);
+    const categoriasSaida = arrayValue(data.saidasPorCategoria ?? data.categoriasSaida);
+    const valoresPorCategoria = numericArray(data.valoresPorCategoria);
+    const margemFinanceira = safeMargin(data.margemFinanceira ?? data.margemPercentual);
 
-    mountChart(ApexCharts, '#chart-fluxo-financeiro', {
+    mountChart(ApexCharts, chartElement('#cashflowChart', '#chart-fluxo-financeiro'), {
         ...shared,
         chart: {
             ...shared.chart,
@@ -122,8 +202,8 @@ const initDashboardCharts = async () => {
             },
         },
         series: [
-            { name: 'Entradas', data: data.entradasPorDia || [] },
-            { name: 'Saídas', data: data.saidasPorDia || [] },
+            { name: 'Entradas', data: entradasPorDia },
+            { name: 'Saídas', data: saidasPorDia },
         ],
         colors: [theme.success, theme.danger],
         stroke: {
@@ -142,19 +222,19 @@ const initDashboardCharts = async () => {
         xaxis: {
             ...shared.xaxis,
             categories: labelsDias,
-            tickAmount: 6,
+            tickAmount: Math.min(6, Math.max(labelsDias.length, 1)),
         },
     });
 
-    mountChart(ApexCharts, '#chart-categorias', {
+    mountChart(ApexCharts, chartElement('#categoryChart', '#chart-categorias'), {
         ...shared,
         chart: {
             ...shared.chart,
             type: 'donut',
             height: 330,
         },
-        series: data.valoresPorCategoria?.length ? data.valoresPorCategoria : [1],
-        labels: data.categoriasSaida?.length ? data.categoriasSaida : ['Sem saídas'],
+        series: valoresPorCategoria.length ? valoresPorCategoria : [0],
+        labels: categoriasSaida.length ? categoriasSaida : ['Sem saídas'],
         colors: [theme.primary, theme.primaryStrong, theme.danger, theme.success, '#60a5fa', '#a78bfa'],
         stroke: {
             colors: [theme.surface],
@@ -171,7 +251,7 @@ const initDashboardCharts = async () => {
                         },
                         value: {
                             color: theme.text,
-                            formatter: (value) => moneyFormatter.format(Number(value)),
+                            formatter: (value) => moneyFormatter.format(Number(value) || 0),
                         },
                         total: {
                             show: true,
@@ -185,19 +265,13 @@ const initDashboardCharts = async () => {
                 },
             },
         },
-        tooltip: {
-            ...shared.tooltip,
-            y: {
-                formatter: (value) => moneyFormatter.format(value),
-            },
-        },
         legend: {
             ...shared.legend,
             position: 'bottom',
         },
     });
 
-    mountChart(ApexCharts, '#chart-saldo-acumulado', {
+    mountChart(ApexCharts, chartElement('#balanceChart', '#chart-saldo-acumulado'), {
         ...shared,
         chart: {
             ...shared.chart,
@@ -212,7 +286,7 @@ const initDashboardCharts = async () => {
             },
         },
         series: [
-            { name: 'Saldo acumulado', data: data.saldoAcumuladoPorDia || [] },
+            { name: 'Saldo acumulado', data: saldoAcumulado },
         ],
         colors: [theme.primary],
         stroke: {
@@ -231,14 +305,13 @@ const initDashboardCharts = async () => {
         xaxis: {
             ...shared.xaxis,
             categories: labelsDias,
-            tickAmount: 6,
+            tickAmount: Math.min(6, Math.max(labelsDias.length, 1)),
         },
     });
 
-    const margin = Number(data.margemPercentual || 0);
-    const radialValue = Math.max(0, Math.min(100, margin));
+    const radialValue = Math.max(0, Math.min(100, margemFinanceira));
 
-    mountChart(ApexCharts, '#chart-saude-financeira', {
+    mountChart(ApexCharts, chartElement('#healthGauge', '#chart-saude-financeira'), {
         ...shared,
         chart: {
             ...shared.chart,
@@ -246,7 +319,7 @@ const initDashboardCharts = async () => {
             height: 330,
         },
         series: [radialValue],
-        colors: [margin >= 0 ? theme.primary : theme.danger],
+        colors: [margemFinanceira >= 0 ? theme.primary : theme.danger],
         plotOptions: {
             radialBar: {
                 startAngle: -135,
@@ -273,7 +346,7 @@ const initDashboardCharts = async () => {
                         color: theme.text,
                         fontSize: '34px',
                         fontWeight: 900,
-                        formatter: () => `${margin.toLocaleString('pt-BR')}%`,
+                        formatter: () => `${margemFinanceira.toLocaleString('pt-BR')}%`,
                     },
                 },
             },
@@ -288,4 +361,14 @@ const initDashboardCharts = async () => {
     });
 };
 
-document.addEventListener('DOMContentLoaded', initDashboardCharts);
+const runWhenReady = () => {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initDashboardCharts, { once: true });
+
+        return;
+    }
+
+    initDashboardCharts();
+};
+
+runWhenReady();
