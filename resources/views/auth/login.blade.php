@@ -7,6 +7,17 @@
 
     <x-auth-session-status class="mb-5 rounded-xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200" :status="session('status')" />
 
+    <div class="mb-6 space-y-3">
+        <x-google-auth-button />
+        <p class="text-center text-sm text-zinc-500">Acesse em segundos. Sem preencher cadastro.</p>
+    </div>
+
+    <div class="mb-6 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.18em] text-zinc-600">
+        <span class="h-px flex-1 bg-white/10"></span>
+        <span>E-mail e senha</span>
+        <span class="h-px flex-1 bg-white/10"></span>
+    </div>
+
     <form method="POST" action="{{ route('login') }}" class="space-y-5">
         @csrf
 

@@ -5,6 +5,17 @@
         <p class="mt-2 text-sm leading-6 text-[#b5b5b5]">Organize receitas, despesas e metas em um painel premium.</p>
     </div>
 
+    <div class="mb-6 space-y-3">
+        <x-google-auth-button />
+        <p class="text-center text-sm text-zinc-500">Acesse em segundos. Sem preencher cadastro.</p>
+    </div>
+
+    <div class="mb-6 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.18em] text-zinc-600">
+        <span class="h-px flex-1 bg-white/10"></span>
+        <span>Cadastro manual</span>
+        <span class="h-px flex-1 bg-white/10"></span>
+    </div>
+
     <form method="POST" action="{{ route('register') }}" class="space-y-5">
         @csrf
 

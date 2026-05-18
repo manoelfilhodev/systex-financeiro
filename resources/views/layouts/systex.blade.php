@@ -13,7 +13,6 @@
     }
     $themes = config('themes', []);
     $currentTheme = array_key_exists(auth()->user()->theme, $themes) ? auth()->user()->theme : 'systex-default';
-    $initials = collect(explode(' ', auth()->user()->name))->filter()->take(2)->map(fn ($part) => mb_substr($part, 0, 1))->join('');
 @endphp
 
 <!DOCTYPE html>
@@ -104,7 +103,7 @@
 
                         <div class="relative">
                             <button type="button" class="sx-button-secondary h-auto py-1.5 pl-1.5 pr-3" x-on:click="userMenuOpen = ! userMenuOpen">
-                                <span class="sx-avatar h-9 w-9 text-sm">{{ $initials }}</span>
+                                <x-user-avatar :user="auth()->user()" class="h-9 w-9 text-sm" />
                                 <span class="hidden text-left sm:block">
                                     <span class="sx-theme-text block text-sm font-bold">{{ auth()->user()->name }}</span>
                                     <span class="sx-theme-muted block max-w-36 truncate text-xs">{{ auth()->user()->email }}</span>

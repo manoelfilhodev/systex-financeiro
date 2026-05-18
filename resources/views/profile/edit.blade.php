@@ -1,5 +1,4 @@
 @php
-    $initials = collect(explode(' ', $user->name))->filter()->take(2)->map(fn ($part) => mb_substr($part, 0, 1))->join('');
     $themes = config('themes', []);
     $currentTheme = array_key_exists($user->theme, $themes) ? $user->theme : 'systex-default';
     $hasPremiumAccess = $user->hasPremiumAccess();
@@ -72,9 +71,7 @@
         </div>
 
         <aside class="sx-card h-fit p-6 text-center">
-            <div class="mx-auto flex h-28 w-28 items-center justify-center rounded-full text-4xl font-black text-white shadow-2xl" style="background: linear-gradient(135deg, var(--sx-primary), var(--sx-primary-strong)); box-shadow: 0 18px 50px var(--sx-primary-glow);">
-                {{ $initials }}
-            </div>
+            <x-user-avatar :user="$user" class="mx-auto h-28 w-28 text-4xl" />
             <h2 class="sx-theme-text mt-5 text-xl font-black">{{ $user->name }}</h2>
             <p class="sx-theme-muted mt-1 break-all text-sm">{{ $user->email }}</p>
             <div class="sx-theme-border mt-6 rounded-xl border p-4 text-left">

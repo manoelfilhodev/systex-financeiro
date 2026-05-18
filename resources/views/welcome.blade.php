@@ -68,9 +68,10 @@
                     </p>
                     <div class="mt-9 flex flex-col gap-3 sm:flex-row">
                         <a href="{{ route('register') }}" class="sx-button">Começar grátis</a>
+                        <x-google-auth-button class="sm:w-auto" />
                         <a href="#demo-preview" class="sx-button-secondary">Ver demonstração</a>
                     </div>
-                    <p class="sx-theme-muted mt-5 text-sm font-bold">15 dias grátis • Sem cartão • Cancele quando quiser</p>
+                    <p class="sx-theme-muted mt-5 text-sm font-bold">Teste grátis por 15 dias. Sem cartão.</p>
                 </div>
 
                 <div id="demo-preview" class="sx-panel rounded-2xl p-4 sm:p-5">
@@ -204,6 +205,7 @@
                         <p class="sx-theme-text text-2xl font-black">Premium beta</p>
                         <p class="sx-theme-muted mt-2 text-sm">Preço de lançamento em breve.</p>
                         <a href="{{ route('register') }}" class="sx-button mt-6 w-full">Criar conta grátis</a>
+                        <x-google-auth-button class="mt-3" />
                     </div>
                 </div>
             </section>
