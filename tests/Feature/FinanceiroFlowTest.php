@@ -94,4 +94,77 @@ class FinanceiroFlowTest extends TestCase
             ->get(route('lancamentos.edit', $lancamentoExterno))
             ->assertNotFound();
     }
+
+    public function test_usuario_pode_salvar_tema_visual(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->post(route('theme.update'), [
+                'theme' => 'midnight',
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'theme' => 'midnight',
+        ]);
+    }
+
+    public function test_layout_aplica_classe_do_tema_salvo_no_body(): void
+    {
+        $user = User::factory()->create([
+            'theme' => 'pink-neon',
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('theme-pink-neon font-sans', false);
+    }
+
+    public function test_tema_visual_invalido_e_rejeitado(): void
+    {
+        $user = User::factory()->create([
+            'theme' => 'systex-default',
+        ]);
+
+        $this->actingAs($user)
+            ->post(route('theme.update'), [
+                'theme' => 'tema-inexistente',
+            ])
+            ->assertSessionHasErrors('theme');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'theme' => 'systex-default',
+        ]);
+    }
+
+    public function test_tema_visual_e_individual_por_usuario(): void
+    {
+        $user = User::factory()->create([
+            'theme' => 'aurora',
+        ]);
+        $outroUsuario = User::factory()->create([
+            'theme' => 'office-clean',
+        ]);
+
+        $this->actingAs($user)
+            ->post(route('theme.update'), [
+                'theme' => 'cyberpunk',
+            ])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'theme' => 'cyberpunk',
+        ]);
+
+        $this->assertDatabaseHas('users', [
+            'id' => $outroUsuario->id,
+            'theme' => 'office-clean',
+        ]);
+    }
 }

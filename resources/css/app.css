@@ -2,13 +2,398 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theme classes stay outside @layer so Tailwind cannot purge dynamic body classes. */
+:root,
+.theme-systex-default {
+    --sx-bg: #0b0b0b;
+    --sx-bg-soft: #111111;
+    --sx-surface: #111111;
+    --sx-card: #161616;
+    --sx-border: rgba(255, 255, 255, 0.08);
+    --sx-text: #ffffff;
+    --sx-muted: #b5b5b5;
+    --sx-muted-strong: #d4d4d8;
+    --sx-primary: #ff2a2a;
+    --sx-primary-strong: #d70f0f;
+    --sx-primary-soft: rgba(255, 42, 42, 0.12);
+    --sx-primary-glow: rgba(255, 42, 42, 0.25);
+    --sx-shadow: rgba(0, 0, 0, 0.42);
+    --sx-shell-a: rgba(255, 42, 42, 0.16);
+    --sx-shell-b: rgba(255, 42, 42, 0.10);
+    --sx-success: #34d399;
+    --sx-danger: #f87171;
+    --sx-on-primary: #ffffff;
+}
+
+.theme-cyberpunk {
+    --sx-bg: #050011;
+    --sx-bg-soft: #170b3b;
+    --sx-surface: #100d24;
+    --sx-card: #17112d;
+    --sx-border: rgba(138, 92, 246, 0.30);
+    --sx-text: #ffffff;
+    --sx-muted: #c7bdf6;
+    --sx-muted-strong: #eee8ff;
+    --sx-primary: #ff2a6d;
+    --sx-primary-strong: #7c3aed;
+    --sx-primary-soft: rgba(255, 42, 109, 0.18);
+    --sx-primary-glow: rgba(124, 58, 237, 0.42);
+    --sx-shadow: rgba(0, 0, 0, 0.52);
+    --sx-shell-a: rgba(255, 42, 109, 0.30);
+    --sx-shell-b: rgba(34, 211, 238, 0.24);
+    --sx-success: #22d3ee;
+    --sx-danger: #fb7185;
+    --sx-on-primary: #ffffff;
+}
+
+.theme-pink-neon {
+    --sx-bg: #170014;
+    --sx-bg-soft: #2a0527;
+    --sx-surface: #1b0f20;
+    --sx-card: #241228;
+    --sx-border: rgba(255, 62, 181, 0.26);
+    --sx-text: #fff7fb;
+    --sx-muted: #e8b8d5;
+    --sx-muted-strong: #ffe4f4;
+    --sx-primary: #ff3eb5;
+    --sx-primary-strong: #db2777;
+    --sx-primary-soft: rgba(255, 62, 181, 0.18);
+    --sx-primary-glow: rgba(255, 62, 181, 0.42);
+    --sx-shadow: rgba(0, 0, 0, 0.48);
+    --sx-shell-a: rgba(255, 62, 181, 0.34);
+    --sx-shell-b: rgba(244, 114, 182, 0.22);
+    --sx-success: #f9a8d4;
+    --sx-danger: #fb7185;
+    --sx-on-primary: #ffffff;
+}
+
+.theme-office-clean {
+    color-scheme: light;
+    --sx-bg: #f4f6f8;
+    --sx-bg-soft: #ffffff;
+    --sx-surface: #ffffff;
+    --sx-card: #ffffff;
+    --sx-border: rgba(15, 23, 42, 0.14);
+    --sx-text: #111827;
+    --sx-muted: #4b5563;
+    --sx-muted-strong: #1f2937;
+    --sx-primary: #d71920;
+    --sx-primary-strong: #a30f16;
+    --sx-primary-soft: rgba(215, 25, 32, 0.10);
+    --sx-primary-glow: rgba(215, 25, 32, 0.18);
+    --sx-shadow: rgba(15, 23, 42, 0.12);
+    --sx-shell-a: rgba(215, 25, 32, 0.10);
+    --sx-shell-b: rgba(15, 23, 42, 0.05);
+    --sx-success: #047857;
+    --sx-danger: #b91c1c;
+    --sx-on-primary: #ffffff;
+}
+
+.theme-midnight {
+    --sx-bg: #030b1f;
+    --sx-bg-soft: #0f2338;
+    --sx-surface: #0f2338;
+    --sx-card: #10263d;
+    --sx-border: rgba(125, 211, 252, 0.20);
+    --sx-text: #f8fbff;
+    --sx-muted: #a7bdd4;
+    --sx-muted-strong: #d9ecff;
+    --sx-primary: #22d3ee;
+    --sx-primary-strong: #2563eb;
+    --sx-primary-soft: rgba(34, 211, 238, 0.16);
+    --sx-primary-glow: rgba(34, 211, 238, 0.34);
+    --sx-shadow: rgba(1, 8, 20, 0.56);
+    --sx-shell-a: rgba(34, 211, 238, 0.22);
+    --sx-shell-b: rgba(37, 99, 235, 0.16);
+    --sx-success: #38bdf8;
+    --sx-danger: #fb7185;
+    --sx-on-primary: #02111f;
+}
+
+.theme-mecha-steel {
+    --sx-bg: #101214;
+    --sx-bg-soft: #24282d;
+    --sx-surface: #1b1f24;
+    --sx-card: #24282d;
+    --sx-border: rgba(255, 255, 255, 0.14);
+    --sx-text: #f5f5f4;
+    --sx-muted: #b8b6b0;
+    --sx-muted-strong: #e7e5e4;
+    --sx-primary: #ff4b1f;
+    --sx-primary-strong: #c2410c;
+    --sx-primary-soft: rgba(255, 75, 31, 0.16);
+    --sx-primary-glow: rgba(255, 75, 31, 0.34);
+    --sx-shadow: rgba(0, 0, 0, 0.48);
+    --sx-shell-a: rgba(255, 75, 31, 0.22);
+    --sx-shell-b: rgba(251, 146, 60, 0.14);
+    --sx-success: #fbbf24;
+    --sx-danger: #fb7185;
+    --sx-on-primary: #ffffff;
+}
+
+.theme-aurora {
+    --sx-bg: #071813;
+    --sx-bg-soft: #13302f;
+    --sx-surface: #102b2f;
+    --sx-card: #13302f;
+    --sx-border: rgba(167, 139, 250, 0.22);
+    --sx-text: #f7fffb;
+    --sx-muted: #b7d9d2;
+    --sx-muted-strong: #defcf3;
+    --sx-primary: #34d399;
+    --sx-primary-strong: #8b5cf6;
+    --sx-primary-soft: rgba(52, 211, 153, 0.16);
+    --sx-primary-glow: rgba(59, 130, 246, 0.34);
+    --sx-shadow: rgba(0, 0, 0, 0.46);
+    --sx-shell-a: rgba(52, 211, 153, 0.24);
+    --sx-shell-b: rgba(139, 92, 246, 0.22);
+    --sx-success: #34d399;
+    --sx-danger: #fb7185;
+    --sx-on-primary: #052016;
+}
+
+body.theme-pink-neon {
+    background: #170014 !important;
+    color: #fff7fb !important;
+}
+
+body.theme-office-clean {
+    background: #f4f6f8 !important;
+    color: #111827 !important;
+}
+
+body.theme-cyberpunk {
+    background: #050011 !important;
+}
+
+body.theme-midnight {
+    background: #030b1f !important;
+}
+
+body.theme-mecha-steel {
+    background: #101214 !important;
+}
+
+body.theme-aurora {
+    background: #071813 !important;
+}
+
 @layer base {
+    :root,
+    .theme-systex-default {
+        --sx-bg: #0b0b0b;
+        --sx-bg-soft: #111111;
+        --sx-surface: #111111;
+        --sx-card: #161616;
+        --sx-border: rgba(255, 255, 255, 0.08);
+        --sx-text: #ffffff;
+        --sx-muted: #b5b5b5;
+        --sx-muted-strong: #d4d4d8;
+        --sx-primary: #ff2a2a;
+        --sx-primary-strong: #d70f0f;
+        --sx-primary-soft: rgba(255, 42, 42, 0.12);
+        --sx-primary-glow: rgba(255, 42, 42, 0.25);
+        --sx-shadow: rgba(0, 0, 0, 0.42);
+        --sx-shell-a: rgba(255, 42, 42, 0.16);
+        --sx-shell-b: rgba(255, 42, 42, 0.10);
+        --sx-success: #34d399;
+        --sx-danger: #f87171;
+    }
+
+    .theme-cyberpunk {
+        --sx-bg: #060611;
+        --sx-bg-soft: #0f0b24;
+        --sx-surface: #100d24;
+        --sx-card: #17112d;
+        --sx-border: rgba(138, 92, 246, 0.22);
+        --sx-text: #ffffff;
+        --sx-muted: #c7bdf6;
+        --sx-muted-strong: #eee8ff;
+        --sx-primary: #ff2a6d;
+        --sx-primary-strong: #7c3aed;
+        --sx-primary-soft: rgba(255, 42, 109, 0.14);
+        --sx-primary-glow: rgba(124, 58, 237, 0.34);
+        --sx-shadow: rgba(0, 0, 0, 0.50);
+        --sx-shell-a: rgba(255, 42, 109, 0.18);
+        --sx-shell-b: rgba(34, 211, 238, 0.14);
+        --sx-success: #22d3ee;
+        --sx-danger: #fb7185;
+    }
+
+    .theme-pink-neon {
+        --sx-bg: #100812;
+        --sx-bg-soft: #180b1d;
+        --sx-surface: #1b0f20;
+        --sx-card: #241228;
+        --sx-border: rgba(255, 62, 181, 0.18);
+        --sx-text: #fff7fb;
+        --sx-muted: #e8b8d5;
+        --sx-muted-strong: #ffe4f4;
+        --sx-primary: #ff3eb5;
+        --sx-primary-strong: #db2777;
+        --sx-primary-soft: rgba(255, 62, 181, 0.14);
+        --sx-primary-glow: rgba(255, 62, 181, 0.30);
+        --sx-shadow: rgba(0, 0, 0, 0.46);
+        --sx-shell-a: rgba(255, 62, 181, 0.18);
+        --sx-shell-b: rgba(244, 114, 182, 0.12);
+        --sx-success: #f9a8d4;
+        --sx-danger: #fb7185;
+    }
+
+    .theme-office-clean {
+        color-scheme: light;
+        --sx-bg: #f4f5f7;
+        --sx-bg-soft: #ffffff;
+        --sx-surface: #ffffff;
+        --sx-card: #ffffff;
+        --sx-border: rgba(15, 23, 42, 0.12);
+        --sx-text: #151515;
+        --sx-muted: #5f6673;
+        --sx-muted-strong: #334155;
+        --sx-primary: #d71920;
+        --sx-primary-strong: #a30f16;
+        --sx-primary-soft: rgba(215, 25, 32, 0.09);
+        --sx-primary-glow: rgba(215, 25, 32, 0.14);
+        --sx-shadow: rgba(15, 23, 42, 0.11);
+        --sx-shell-a: rgba(215, 25, 32, 0.06);
+        --sx-shell-b: rgba(15, 23, 42, 0.04);
+        --sx-success: #047857;
+        --sx-danger: #b91c1c;
+    }
+
+    .theme-midnight {
+        --sx-bg: #07111f;
+        --sx-bg-soft: #0b1828;
+        --sx-surface: #0f2338;
+        --sx-card: #10263d;
+        --sx-border: rgba(125, 211, 252, 0.14);
+        --sx-text: #f8fbff;
+        --sx-muted: #a7bdd4;
+        --sx-muted-strong: #d9ecff;
+        --sx-primary: #22d3ee;
+        --sx-primary-strong: #2563eb;
+        --sx-primary-soft: rgba(34, 211, 238, 0.12);
+        --sx-primary-glow: rgba(34, 211, 238, 0.25);
+        --sx-shadow: rgba(1, 8, 20, 0.54);
+        --sx-shell-a: rgba(34, 211, 238, 0.13);
+        --sx-shell-b: rgba(37, 99, 235, 0.12);
+        --sx-success: #38bdf8;
+        --sx-danger: #fb7185;
+    }
+
+    .theme-mecha-steel {
+        --sx-bg: #101214;
+        --sx-bg-soft: #171a1e;
+        --sx-surface: #1b1f24;
+        --sx-card: #24282d;
+        --sx-border: rgba(255, 255, 255, 0.10);
+        --sx-text: #f5f5f4;
+        --sx-muted: #b8b6b0;
+        --sx-muted-strong: #e7e5e4;
+        --sx-primary: #ff4b1f;
+        --sx-primary-strong: #c2410c;
+        --sx-primary-soft: rgba(255, 75, 31, 0.12);
+        --sx-primary-glow: rgba(255, 75, 31, 0.25);
+        --sx-shadow: rgba(0, 0, 0, 0.46);
+        --sx-shell-a: rgba(255, 75, 31, 0.14);
+        --sx-shell-b: rgba(251, 146, 60, 0.10);
+        --sx-success: #fbbf24;
+        --sx-danger: #fb7185;
+    }
+
+    .theme-aurora {
+        --sx-bg: #061716;
+        --sx-bg-soft: #0b2426;
+        --sx-surface: #102b2f;
+        --sx-card: #13302f;
+        --sx-border: rgba(167, 139, 250, 0.16);
+        --sx-text: #f7fffb;
+        --sx-muted: #b7d9d2;
+        --sx-muted-strong: #defcf3;
+        --sx-primary: #34d399;
+        --sx-primary-strong: #8b5cf6;
+        --sx-primary-soft: rgba(52, 211, 153, 0.12);
+        --sx-primary-glow: rgba(59, 130, 246, 0.24);
+        --sx-shadow: rgba(0, 0, 0, 0.45);
+        --sx-shell-a: rgba(52, 211, 153, 0.15);
+        --sx-shell-b: rgba(139, 92, 246, 0.13);
+        --sx-success: #34d399;
+        --sx-danger: #fb7185;
+    }
+
     html {
         color-scheme: dark;
     }
 
     body {
-        @apply bg-[#0b0b0b] text-white antialiased;
+        background: var(--sx-bg);
+        color: var(--sx-text);
+        @apply antialiased;
+    }
+
+    body.theme-pink-neon {
+        background: #170014 !important;
+        color: #fff7fb !important;
+    }
+
+    body.theme-office-clean {
+        background: #f4f6f8 !important;
+        color: #111827 !important;
+    }
+
+    body.theme-cyberpunk {
+        background: #050011 !important;
+    }
+
+    body.theme-midnight {
+        background: #030b1f !important;
+    }
+
+    body.theme-mecha-steel {
+        background: #101214 !important;
+    }
+
+    body.theme-aurora {
+        background: #071813 !important;
+    }
+
+    body.theme-pink-neon .sx-shell {
+        background:
+            radial-gradient(circle at 78% 10%, rgba(255, 62, 181, 0.34), transparent 28rem),
+            radial-gradient(circle at 6% 86%, rgba(244, 114, 182, 0.22), transparent 24rem),
+            linear-gradient(135deg, #170014 0%, #2a0527 48%, #170014 100%) !important;
+    }
+
+    body.theme-office-clean .sx-shell {
+        background:
+            radial-gradient(circle at 82% 8%, rgba(215, 25, 32, 0.10), transparent 26rem),
+            linear-gradient(135deg, #f4f6f8 0%, #ffffff 48%, #eef1f5 100%) !important;
+    }
+
+    body.theme-cyberpunk .sx-shell {
+        background:
+            radial-gradient(circle at 82% 10%, rgba(255, 42, 109, 0.30), transparent 26rem),
+            radial-gradient(circle at 8% 82%, rgba(34, 211, 238, 0.24), transparent 24rem),
+            linear-gradient(135deg, #050011 0%, #170b3b 48%, #050011 100%) !important;
+    }
+
+    body.theme-midnight .sx-shell {
+        background:
+            radial-gradient(circle at 82% 12%, rgba(34, 211, 238, 0.22), transparent 26rem),
+            linear-gradient(135deg, #030b1f 0%, #0f2338 52%, #030b1f 100%) !important;
+    }
+
+    body.theme-mecha-steel .sx-shell {
+        background:
+            radial-gradient(circle at 82% 10%, rgba(255, 75, 31, 0.22), transparent 26rem),
+            linear-gradient(135deg, #101214 0%, #24282d 48%, #101214 100%) !important;
+    }
+
+    body.theme-aurora .sx-shell {
+        background:
+            radial-gradient(circle at 82% 10%, rgba(52, 211, 153, 0.24), transparent 26rem),
+            radial-gradient(circle at 8% 84%, rgba(139, 92, 246, 0.22), transparent 24rem),
+            linear-gradient(135deg, #071813 0%, #13302f 48%, #071813 100%) !important;
     }
 
     ::selection {
@@ -19,61 +404,226 @@
 @layer components {
     .sx-shell {
         background:
-            radial-gradient(circle at 82% 12%, rgba(255, 42, 42, 0.16), transparent 26rem),
-            radial-gradient(circle at 6% 82%, rgba(255, 42, 42, 0.10), transparent 24rem),
-            linear-gradient(135deg, #0b0b0b 0%, #111111 48%, #0b0b0b 100%);
+            radial-gradient(circle at 82% 12%, var(--sx-shell-a), transparent 26rem),
+            radial-gradient(circle at 6% 82%, var(--sx-shell-b), transparent 24rem),
+            linear-gradient(135deg, var(--sx-bg) 0%, var(--sx-bg-soft) 48%, var(--sx-bg) 100%);
     }
 
     .sx-panel {
-        @apply border border-white/[0.06] bg-white/[0.035] shadow-2xl shadow-black/40 backdrop-blur-xl;
+        border: 1px solid var(--sx-border);
+        background: color-mix(in srgb, var(--sx-surface) 88%, transparent);
+        box-shadow: 0 24px 80px var(--sx-shadow);
+        @apply backdrop-blur-xl;
+    }
+
+    .sx-sidebar {
+        border-color: var(--sx-border);
+        background: color-mix(in srgb, var(--sx-bg) 94%, var(--sx-surface));
+        box-shadow: 0 24px 80px var(--sx-shadow);
+        @apply backdrop-blur-xl;
+    }
+
+    .sx-topbar {
+        border-color: var(--sx-border);
+        background: color-mix(in srgb, var(--sx-bg) 82%, transparent);
+        @apply backdrop-blur-xl;
     }
 
     .sx-card {
-        @apply rounded-xl border border-white/[0.06] bg-[#161616]/80 shadow-xl shadow-black/30 transition duration-200;
+        border: 1px solid var(--sx-border);
+        background: color-mix(in srgb, var(--sx-card) 90%, transparent);
+        box-shadow: 0 18px 60px var(--sx-shadow);
+        @apply rounded-xl transition duration-200;
     }
 
     .sx-card-hover {
-        @apply hover:-translate-y-0.5 hover:border-red-500/25 hover:shadow-red-500/10;
+        @apply hover:-translate-y-0.5;
+    }
+
+    .sx-card-hover:hover {
+        border-color: color-mix(in srgb, var(--sx-primary) 35%, transparent);
+        box-shadow: 0 18px 60px var(--sx-primary-glow);
+    }
+
+    .sx-subcard {
+        border: 1px solid var(--sx-border);
+        background: color-mix(in srgb, var(--sx-surface) 68%, transparent);
+        @apply rounded-xl;
+    }
+
+    .sx-icon-box {
+        border: 1px solid color-mix(in srgb, var(--sx-primary) 24%, transparent);
+        background: var(--sx-primary-soft);
+        color: var(--sx-primary);
+        box-shadow: 0 12px 32px color-mix(in srgb, var(--sx-primary-glow) 70%, transparent);
+        @apply flex items-center justify-center rounded-xl;
+    }
+
+    .sx-logo-mark {
+        background: linear-gradient(180deg, var(--sx-primary), var(--sx-primary-strong));
+        box-shadow: 0 12px 30px var(--sx-primary-glow);
+        @apply flex items-center justify-center rounded-xl font-black text-white;
+    }
+
+    .sx-avatar {
+        background: linear-gradient(135deg, var(--sx-primary), var(--sx-primary-strong));
+        box-shadow: 0 18px 50px var(--sx-primary-glow);
+        @apply flex items-center justify-center rounded-full font-black text-white;
+    }
+
+    .sx-nav-item {
+        color: var(--sx-muted);
+        @apply flex items-center gap-3 rounded-xl border border-transparent px-4 py-3 text-sm font-semibold transition;
+    }
+
+    .sx-nav-item:hover {
+        border-color: var(--sx-border);
+        background: color-mix(in srgb, var(--sx-primary) 8%, transparent);
+        color: var(--sx-text);
+    }
+
+    .sx-nav-item-active {
+        border-color: color-mix(in srgb, var(--sx-primary) 34%, transparent);
+        background: var(--sx-primary-soft);
+        color: var(--sx-text);
+        box-shadow: 0 14px 34px var(--sx-primary-glow);
+    }
+
+    .sx-nav-icon {
+        color: color-mix(in srgb, var(--sx-muted) 72%, transparent);
+    }
+
+    .sx-nav-item:hover .sx-nav-icon,
+    .sx-nav-item-active .sx-nav-icon {
+        color: var(--sx-primary);
     }
 
     .sx-input {
-        @apply h-12 w-full rounded-lg border border-white/[0.08] bg-[#111111] px-4 text-sm text-white placeholder:text-zinc-600 shadow-inner shadow-black/20 transition focus:border-red-500/70 focus:ring-4 focus:ring-red-500/10;
+        border: 1px solid var(--sx-border);
+        background: var(--sx-surface);
+        color: var(--sx-text);
+        @apply h-12 w-full rounded-lg px-4 text-sm shadow-inner shadow-black/20 transition placeholder:text-zinc-500 focus:ring-4;
+    }
+
+    .sx-input:focus {
+        border-color: var(--sx-primary);
+        --tw-ring-color: var(--sx-primary-glow);
     }
 
     .sx-select {
-        @apply h-12 w-full rounded-lg border border-white/[0.08] bg-[#111111] px-4 text-sm text-white shadow-inner shadow-black/20 transition focus:border-red-500/70 focus:ring-4 focus:ring-red-500/10;
+        border: 1px solid var(--sx-border);
+        background: var(--sx-surface);
+        color: var(--sx-text);
+        @apply h-12 w-full rounded-lg px-4 text-sm shadow-inner shadow-black/20 transition focus:ring-4;
+    }
+
+    .sx-select:focus {
+        border-color: var(--sx-primary);
+        --tw-ring-color: var(--sx-primary-glow);
     }
 
     .sx-textarea {
-        @apply w-full rounded-lg border border-white/[0.08] bg-[#111111] px-4 py-3 text-sm text-white placeholder:text-zinc-600 shadow-inner shadow-black/20 transition focus:border-red-500/70 focus:ring-4 focus:ring-red-500/10;
+        border: 1px solid var(--sx-border);
+        background: var(--sx-surface);
+        color: var(--sx-text);
+        @apply w-full rounded-lg px-4 py-3 text-sm shadow-inner shadow-black/20 transition placeholder:text-zinc-500 focus:ring-4;
+    }
+
+    .sx-textarea:focus {
+        border-color: var(--sx-primary);
+        --tw-ring-color: var(--sx-primary-glow);
     }
 
     .sx-label {
-        @apply mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-zinc-400;
+        color: var(--sx-muted);
+        @apply mb-2 block text-xs font-semibold uppercase tracking-[0.16em];
     }
 
     .sx-button {
-        @apply inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-gradient-to-b from-[#ff3b3b] to-[#d70f0f] px-5 text-sm font-bold text-white shadow-lg shadow-red-500/20 transition hover:-translate-y-0.5 hover:shadow-red-500/30 focus:outline-none focus:ring-4 focus:ring-red-500/20;
+        background: linear-gradient(180deg, var(--sx-primary), var(--sx-primary-strong));
+        box-shadow: 0 12px 30px var(--sx-primary-glow);
+        @apply inline-flex h-11 items-center justify-center gap-2 rounded-lg px-5 text-sm font-bold text-white transition hover:-translate-y-0.5 focus:outline-none focus:ring-4;
+    }
+
+    .sx-button:focus {
+        --tw-ring-color: var(--sx-primary-glow);
     }
 
     .sx-button-secondary {
-        @apply inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.04] px-5 text-sm font-bold text-zinc-200 transition hover:border-red-500/40 hover:bg-red-500/10 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-500/10;
+        border: 1px solid var(--sx-border);
+        background: color-mix(in srgb, var(--sx-surface) 75%, transparent);
+        color: var(--sx-muted-strong);
+        @apply inline-flex h-11 items-center justify-center gap-2 rounded-lg px-5 text-sm font-bold transition focus:outline-none focus:ring-4;
+    }
+
+    .sx-button-secondary:hover {
+        border-color: color-mix(in srgb, var(--sx-primary) 45%, transparent);
+        background: var(--sx-primary-soft);
+        color: var(--sx-text);
+    }
+
+    .sx-button-secondary:focus {
+        --tw-ring-color: var(--sx-primary-glow);
     }
 
     .sx-button-danger {
-        @apply inline-flex h-11 items-center justify-center rounded-lg border border-red-500/45 bg-red-500/10 px-5 text-sm font-bold text-red-200 transition hover:bg-red-500 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-500/20;
+        border: 1px solid color-mix(in srgb, var(--sx-danger) 45%, transparent);
+        background: color-mix(in srgb, var(--sx-danger) 12%, transparent);
+        color: var(--sx-danger);
+        @apply inline-flex h-11 items-center justify-center rounded-lg px-5 text-sm font-bold transition focus:outline-none focus:ring-4;
+    }
+
+    .sx-button-danger:hover {
+        background: var(--sx-danger);
+        color: white;
+    }
+
+    .sx-button-danger:focus {
+        --tw-ring-color: color-mix(in srgb, var(--sx-danger) 25%, transparent);
+    }
+
+    .sx-theme-debug {
+        background: var(--sx-primary);
+        color: var(--sx-on-primary, #fff);
+        box-shadow: 0 0 30px var(--sx-primary-glow);
+        @apply hidden rounded-full px-3 py-1.5 text-xs font-black md:inline-flex;
     }
 
     .sx-badge {
         @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-bold;
     }
 
+    .sx-badge-theme {
+        background: var(--sx-primary-soft);
+        color: var(--sx-primary);
+    }
+
+    .sx-badge-income {
+        background: color-mix(in srgb, var(--sx-success) 14%, transparent);
+        color: var(--sx-success);
+    }
+
+    .sx-badge-expense {
+        background: color-mix(in srgb, var(--sx-danger) 14%, transparent);
+        color: var(--sx-danger);
+    }
+
+    .sx-value-income {
+        color: var(--sx-success);
+    }
+
+    .sx-value-expense {
+        color: var(--sx-danger);
+    }
+
     .sx-table {
-        @apply min-w-full divide-y divide-white/[0.06] text-left text-sm;
+        @apply min-w-full text-left text-sm;
     }
 
     .sx-table thead {
-        @apply bg-white/[0.03] text-xs uppercase tracking-[0.16em] text-zinc-500;
+        background: color-mix(in srgb, var(--sx-surface) 76%, transparent);
+        color: var(--sx-muted);
+        @apply text-xs uppercase tracking-[0.16em];
     }
 
     .sx-table th {
@@ -85,10 +635,47 @@
     }
 
     .sx-table tbody {
-        @apply divide-y divide-white/[0.06];
+        @apply divide-y;
+        border-color: var(--sx-border);
     }
 
     .sx-table tbody tr {
-        @apply transition hover:bg-white/[0.035];
+        @apply transition;
+    }
+
+    .sx-table tbody tr:hover {
+        background: color-mix(in srgb, var(--sx-primary) 7%, transparent);
+    }
+
+    .sx-theme-text {
+        color: var(--sx-text);
+    }
+
+    .sx-theme-muted {
+        color: var(--sx-muted);
+    }
+
+    .sx-theme-primary {
+        color: var(--sx-primary);
+    }
+
+    .sx-theme-border {
+        border-color: var(--sx-border);
+    }
+
+    .sx-theme-surface {
+        background: color-mix(in srgb, var(--sx-surface) 88%, transparent);
+    }
+
+    .sx-theme-soft {
+        background: var(--sx-primary-soft);
+    }
+
+    .sx-theme-danger {
+        color: var(--sx-danger);
+    }
+
+    .sx-divider {
+        border-color: var(--sx-border);
     }
 }

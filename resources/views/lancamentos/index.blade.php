@@ -31,16 +31,16 @@
                         <tr class="text-zinc-300">
                             <td>{{ $lancamento->data_lancamento->format('d/m/Y') }}</td>
                             <td>
-                                <p class="font-bold text-white">{{ $lancamento->descricao }}</p>
+                                <p class="sx-theme-text font-bold">{{ $lancamento->descricao }}</p>
                                 @if ($lancamento->observacao)
                                     <p class="mt-1 max-w-sm truncate text-xs text-zinc-500">{{ $lancamento->observacao }}</p>
                                 @endif
                             </td>
                             <td>{{ $lancamento->categoria?->nome ?? 'Sem categoria' }}</td>
                             <td>
-                                <span class="sx-badge {{ $lancamento->tipo === 'entrada' ? 'bg-emerald-500/10 text-emerald-300' : 'bg-red-500/10 text-red-300' }}">{{ ucfirst($lancamento->tipo) }}</span>
+                                <span class="sx-badge {{ $lancamento->tipo === 'entrada' ? 'sx-badge-income' : 'sx-badge-expense' }}">{{ ucfirst($lancamento->tipo) }}</span>
                             </td>
-                            <td class="text-right font-black {{ $lancamento->tipo === 'entrada' ? 'text-emerald-300' : 'text-red-300' }}">{{ $lancamento->tipo === 'entrada' ? '+' : '-' }} {{ $lancamento->valor_formatado }}</td>
+                            <td class="text-right font-black {{ $lancamento->tipo === 'entrada' ? 'sx-value-income' : 'sx-value-expense' }}">{{ $lancamento->tipo === 'entrada' ? '+' : '-' }} {{ $lancamento->valor_formatado }}</td>
                             <td>
                                 <div class="flex justify-end gap-2">
                                     <a href="{{ route('lancamentos.edit', $lancamento) }}" class="sx-button-secondary h-9 px-3 text-xs">Editar</a>
@@ -61,7 +61,7 @@
             </table>
         </div>
 
-        <div class="border-t border-white/[0.06] p-5">
+        <div class="sx-divider border-t p-5">
             {{ $lancamentos->links() }}
         </div>
     </section>
