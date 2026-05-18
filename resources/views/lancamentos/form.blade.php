@@ -24,7 +24,7 @@
 <div class="grid gap-5 sm:grid-cols-2">
     <div>
         <label for="valor" class="sx-label">Valor</label>
-        <input id="valor" name="valor" type="number" min="0.01" max="9999999999.99" step="0.01" value="{{ old('valor', $lancamento?->valor) }}" required class="sx-input" placeholder="0,00">
+        <input id="valor" name="valor" type="text" inputmode="numeric" autocomplete="off" value="{{ old('valor', $lancamento?->valor ? number_format((float) $lancamento->valor, 2, ',', '.') : '') }}" required class="sx-input" placeholder="0,00" data-currency-brl>
         @error('valor') <p class="sx-theme-danger mt-2 text-sm font-semibold">{{ $message }}</p> @enderror
     </div>
 

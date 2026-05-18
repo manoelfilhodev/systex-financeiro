@@ -83,6 +83,10 @@ class LancamentoController extends Controller
 
     private function validated(Request $request): array
     {
+        $request->merge([
+            'valor' => $this->normalizeMoney($request->input('valor')),
+        ]);
+
         return $request->validate([
             'tipo' => ['required', Rule::in(['entrada', 'saida'])],
             'descricao' => ['required', 'string', 'max:180'],
@@ -94,6 +98,21 @@ class LancamentoController extends Controller
             ],
             'observacao' => ['nullable', 'string', 'max:2000'],
         ]);
+    }
+
+    private function normalizeMoney(mixed $value): mixed
+    {
+        if (! is_string($value)) {
+            return $value;
+        }
+
+        $value = trim($value);
+
+        if (str_contains($value, ',')) {
+            return str_replace(',', '.', str_replace('.', '', $value));
+        }
+
+        return $value;
     }
 
     private function categoriasDoUsuario(Request $request)

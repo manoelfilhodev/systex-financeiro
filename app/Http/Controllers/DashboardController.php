@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lancamento;
+use App\Services\SmartInsightService;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function __invoke(Request $request): View
+    public function __invoke(Request $request, SmartInsightService $smartInsightService): View
     {
         $validated = $request->validate([
             'mes' => ['nullable', 'date_format:Y-m'],
@@ -62,7 +63,7 @@ class DashboardController extends Controller
             ->leftJoin('categorias', 'lancamentos.categoria_id', '=', 'categorias.id')
             ->where('lancamentos.tipo', 'saida')
             ->selectRaw('COALESCE(categorias.nome, ?) as categoria_nome, SUM(lancamentos.valor) as total', ['Sem categoria'])
-            ->groupBy('categorias.nome')
+            ->groupBy('categorias.id', 'categorias.nome')
             ->orderByDesc('total')
             ->limit(6)
             ->get();
@@ -72,10 +73,23 @@ class DashboardController extends Controller
             : 0;
 
         $hasPremiumAccess = $request->user()->hasPremiumAccess();
+        $smartInsightService->generateForUser($request->user(), $mes);
+
+        $totalInsights = $request->user()->insights()
+            ->where('reference_month', $mes)
+            ->count();
+
+        $insights = $request->user()->insights()
+            ->where('reference_month', $mes)
+            ->latest()
+            ->limit($hasPremiumAccess ? 8 : 2)
+            ->get();
 
         return view('dashboard', [
             'mes' => $mes,
             'hasPremiumAccess' => $hasPremiumAccess,
+            'insights' => $insights,
+            'showInsightUpgradeCta' => ! $hasPremiumAccess && $totalInsights > $insights->count(),
             'totalEntradas' => $totalEntradas,
             'totalSaidas' => $totalSaidas,
             'saldoMes' => $saldoMes,

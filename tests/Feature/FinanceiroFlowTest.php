@@ -3,9 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\Categoria;
+use App\Models\Insight;
 use App\Models\Lancamento;
 use App\Models\Payment;
 use App\Models\User;
+use App\Services\SmartInsightService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -128,6 +130,27 @@ class FinanceiroFlowTest extends TestCase
         $this->assertDatabaseMissing('lancamentos', [
             'user_id' => $user->id,
             'descricao' => 'Tentativa inválida',
+        ]);
+    }
+
+    public function test_lancamento_aceita_valor_formatado_em_brl(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->post(route('lancamentos.store'), [
+                'tipo' => 'entrada',
+                'descricao' => 'Recebimento formatado',
+                'valor' => '1.234,56',
+                'data_lancamento' => '2026-05-12',
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('lancamentos.index'));
+
+        $this->assertDatabaseHas('lancamentos', [
+            'user_id' => $user->id,
+            'descricao' => 'Recebimento formatado',
+            'valor' => 1234.56,
         ]);
     }
 
@@ -464,5 +487,149 @@ class FinanceiroFlowTest extends TestCase
                     && (float) $stats['revenue_month'] === 49.9
                     && (float) $stats['pending_revenue'] === 99.8;
             });
+    }
+
+    public function test_smart_insights_gera_insight_sem_lancamento(): void
+    {
+        $user = User::factory()->create();
+
+        app(SmartInsightService::class)->generateForUser($user, '2026-05');
+
+        $this->assertDatabaseHas('insights', [
+            'user_id' => $user->id,
+            'reference_month' => '2026-05',
+            'type' => 'neutral',
+            'title' => 'Primeiros registros',
+        ]);
+    }
+
+    public function test_smart_insights_gera_insight_de_saldo_positivo(): void
+    {
+        $user = User::factory()->create();
+
+        Lancamento::create([
+            'user_id' => $user->id,
+            'tipo' => 'entrada',
+            'descricao' => 'Receita',
+            'valor' => 1200,
+            'data_lancamento' => '2026-05-10',
+        ]);
+
+        Lancamento::create([
+            'user_id' => $user->id,
+            'tipo' => 'saida',
+            'descricao' => 'Despesa',
+            'valor' => 300,
+            'data_lancamento' => '2026-05-12',
+        ]);
+
+        app(SmartInsightService::class)->generateForUser($user, '2026-05');
+
+        $this->assertDatabaseHas('insights', [
+            'user_id' => $user->id,
+            'reference_month' => '2026-05',
+            'type' => 'achievement',
+            'title' => 'Saldo positivo',
+        ]);
+    }
+
+    public function test_smart_insights_gera_warning_de_saldo_negativo(): void
+    {
+        $user = User::factory()->create();
+
+        Lancamento::create([
+            'user_id' => $user->id,
+            'tipo' => 'entrada',
+            'descricao' => 'Receita',
+            'valor' => 200,
+            'data_lancamento' => '2026-05-10',
+        ]);
+
+        Lancamento::create([
+            'user_id' => $user->id,
+            'tipo' => 'saida',
+            'descricao' => 'Despesa',
+            'valor' => 500,
+            'data_lancamento' => '2026-05-12',
+        ]);
+
+        app(SmartInsightService::class)->generateForUser($user, '2026-05');
+
+        $this->assertDatabaseHas('insights', [
+            'user_id' => $user->id,
+            'reference_month' => '2026-05',
+            'type' => 'warning',
+            'title' => 'Saldo negativo',
+        ]);
+    }
+
+    public function test_smart_insights_nao_duplica_insight_do_mesmo_mes(): void
+    {
+        $user = User::factory()->create();
+
+        Lancamento::create([
+            'user_id' => $user->id,
+            'tipo' => 'entrada',
+            'descricao' => 'Receita',
+            'valor' => 1200,
+            'data_lancamento' => '2026-05-10',
+        ]);
+
+        app(SmartInsightService::class)->generateForUser($user, '2026-05');
+        app(SmartInsightService::class)->generateForUser($user, '2026-05');
+
+        $this->assertSame(1, Insight::where([
+            'user_id' => $user->id,
+            'reference_month' => '2026-05',
+            'type' => 'achievement',
+            'title' => 'Saldo positivo',
+        ])->count());
+    }
+
+    public function test_usuario_nao_marca_insight_de_outro_usuario_como_lido(): void
+    {
+        $user = User::factory()->create([
+            'plan' => 'premium',
+            'subscription_status' => 'active',
+            'premium_until' => now()->addMonth(),
+        ]);
+        $outroUsuario = User::factory()->create();
+        $insight = Insight::create([
+            'user_id' => $outroUsuario->id,
+            'type' => 'neutral',
+            'title' => 'Protegido',
+            'message' => 'Insight de outro usuário.',
+            'reference_month' => '2026-05',
+        ]);
+
+        $this->actingAs($user)
+            ->post(route('insights.read', $insight))
+            ->assertForbidden();
+
+        $this->assertNull($insight->fresh()->read_at);
+    }
+
+    public function test_starter_ve_no_maximo_dois_insights_e_cta(): void
+    {
+        $user = User::factory()->create([
+            'plan' => 'starter',
+            'subscription_status' => 'expired',
+        ]);
+
+        foreach (range(1, 3) as $index) {
+            Insight::create([
+                'user_id' => $user->id,
+                'type' => 'neutral',
+                'title' => "Insight {$index}",
+                'message' => "Mensagem {$index}",
+                'reference_month' => '2026-05',
+            ]);
+        }
+
+        $this->actingAs($user)
+            ->get(route('dashboard', ['mes' => '2026-05']))
+            ->assertOk()
+            ->assertViewHas('insights', fn ($insights): bool => $insights->count() === 2)
+            ->assertViewHas('showInsightUpgradeCta', true);
     }
 }

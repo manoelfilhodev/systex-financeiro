@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InsightController;
 use App\Http\Controllers\LancamentoController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PremiumController;
@@ -22,6 +23,8 @@ Route::middleware(['auth', 'subscription'])->group(function () {
     Route::resource('categorias', CategoriaController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('lancamentos', LancamentoController::class)->except(['show']);
     Route::post('/theme', [ThemeController::class, 'update'])->name('theme.update');
+    Route::post('/insights/{insight}/read', [InsightController::class, 'read'])->name('insights.read');
+    Route::post('/insights/read-all', [InsightController::class, 'readAll'])->name('insights.read-all');
     Route::get('/premium', PremiumController::class)->name('premium.index');
     Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
 

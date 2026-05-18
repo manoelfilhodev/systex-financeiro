@@ -49,6 +49,11 @@ class User extends Authenticatable
         return $this->hasMany(Payment::class);
     }
 
+    public function insights(): HasMany
+    {
+        return $this->hasMany(Insight::class);
+    }
+
     public function isAdmin(): bool
     {
         return $this->plan === 'admin';

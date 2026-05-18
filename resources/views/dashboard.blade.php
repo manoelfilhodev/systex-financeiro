@@ -1,5 +1,15 @@
 @extends('layouts.systex', ['title' => 'Dashboard | Systex Financeiro', 'heading' => 'Resumo do mês', 'eyebrow' => 'Dashboard'])
 
+@php
+    $insightStyles = [
+        'positive' => ['badge' => 'sx-badge-income', 'icon' => '+'],
+        'warning' => ['badge' => 'sx-badge-expense', 'icon' => '!'],
+        'achievement' => ['badge' => 'sx-badge-theme', 'icon' => '*'],
+        'trend' => ['badge' => 'bg-cyan-500/10 text-cyan-300', 'icon' => '^'],
+        'neutral' => ['badge' => 'bg-zinc-500/10 text-zinc-300', 'icon' => '-'],
+    ];
+@endphp
+
 @section('content')
     <div class="mb-6 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div>
@@ -46,6 +56,68 @@
             </div>
         </div>
     </div>
+
+    <section class="sx-card mt-6 overflow-hidden">
+        <div class="sx-divider flex flex-col gap-3 border-b p-5 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+                <h2 class="sx-theme-text text-lg font-black">Insights inteligentes</h2>
+                <p class="sx-theme-muted mt-1 text-sm">Sinais automáticos do mês selecionado, gerados por regras simples de acompanhamento.</p>
+            </div>
+
+            @if ($insights->whereNull('read_at')->isNotEmpty())
+                <form method="POST" action="{{ route('insights.read-all') }}">
+                    @csrf
+                    <button class="sx-button-secondary h-10 px-4 text-xs">Marcar todos como lidos</button>
+                </form>
+            @endif
+        </div>
+
+        <div class="grid gap-4 p-5 lg:grid-cols-2">
+            @forelse ($insights as $insight)
+                @php($style = $insightStyles[$insight->type] ?? $insightStyles['neutral'])
+
+                <article class="sx-subcard p-4 {{ $insight->read_at ? 'opacity-70' : '' }}">
+                    <div class="flex items-start gap-4">
+                        <span class="sx-icon-box h-11 w-11 shrink-0 text-sm">{{ $style['icon'] }}</span>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="sx-badge {{ $style['badge'] }}">{{ ucfirst($insight->type) }}</span>
+                                @if ($insight->read_at)
+                                    <span class="sx-theme-muted text-xs font-bold">Lido</span>
+                                @endif
+                            </div>
+                            <h3 class="sx-theme-text mt-3 font-black">{{ $insight->title }}</h3>
+                            <p class="sx-theme-muted mt-2 text-sm leading-6">{{ $insight->message }}</p>
+
+                            @if (! $insight->read_at)
+                                <form method="POST" action="{{ route('insights.read', $insight) }}" class="mt-4">
+                                    @csrf
+                                    <button class="sx-button-secondary h-9 px-3 text-xs">Marcar como lido</button>
+                                </form>
+                            @endif
+                        </div>
+                    </div>
+                </article>
+            @empty
+                <div class="sx-subcard p-5 lg:col-span-2">
+                    <p class="sx-theme-text font-bold">Ainda não há insights para este mês.</p>
+                    <p class="sx-theme-muted mt-2 text-sm">Registre algumas movimentações e o painel começa a destacar sinais úteis automaticamente.</p>
+                </div>
+            @endforelse
+        </div>
+
+        @if ($showInsightUpgradeCta)
+            <div class="sx-divider border-t p-5">
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                        <p class="sx-theme-text font-black">Desbloqueie insights avançados no Premium.</p>
+                        <p class="sx-theme-muted mt-1 text-sm">No Starter você vê uma prévia; no Premium todos os sinais do mês ficam disponíveis.</p>
+                    </div>
+                    <a href="{{ route('premium.index') }}" class="sx-button w-fit">Ver Premium</a>
+                </div>
+            </div>
+        @endif
+    </section>
 
     @if ($hasPremiumAccess)
         <script id="dashboard-charts-data" type="application/json">
