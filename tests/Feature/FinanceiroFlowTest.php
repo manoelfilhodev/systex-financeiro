@@ -8,6 +8,7 @@ use App\Models\Lancamento;
 use App\Models\Payment;
 use App\Models\User;
 use App\Services\SmartInsightService;
+use Database\Seeders\DemoFinanceiroSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -132,6 +133,20 @@ class FinanceiroFlowTest extends TestCase
                     && is_iterable($chartData['saldoAcumulado'])
                     && is_numeric($chartData['margemFinanceira']);
             });
+    }
+
+    public function test_landing_publica_comunica_trial_temas_e_insights(): void
+    {
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('Controle suas finanças com')
+            ->assertSee('inteligência.')
+            ->assertSee('15 dias grátis')
+            ->assertSee('Sem cartão')
+            ->assertSee('Insights inteligentes')
+            ->assertSee('Temas personalizados')
+            ->assertSee('Beta Founders')
+            ->assertSee('Criar conta grátis');
     }
 
     public function test_lancamento_nao_aceita_categoria_de_outro_usuario(): void
@@ -659,5 +674,23 @@ class FinanceiroFlowTest extends TestCase
             ->assertOk()
             ->assertViewHas('insights', fn ($insights): bool => $insights->count() === 2)
             ->assertViewHas('showInsightUpgradeCta', true);
+    }
+
+    public function test_demo_financeiro_seeder_cria_dados_apenas_para_usuario_demo(): void
+    {
+        $this->seed(DemoFinanceiroSeeder::class);
+
+        $demo = User::where('email', 'demo@systexfinanceiro.local')->first();
+
+        $this->assertNotNull($demo);
+        $this->assertSame('premium', $demo->plan);
+        $this->assertSame('midnight', $demo->theme);
+        $this->assertSame(10, $demo->categorias()->count());
+        $this->assertSame(38, $demo->lancamentos()->where('observacao', 'demo-financeiro-seeder')->count());
+
+        $this->assertTrue($demo->lancamentos()
+            ->whereDate('data_lancamento', '2026-05-05')
+            ->where('descricao', 'Salário mensal')
+            ->exists());
     }
 }
