@@ -35,6 +35,8 @@ Route::middleware(['auth', 'subscription', 'admin'])->prefix('admin')->name('adm
     Route::post('/payments/{payment}/approve', [AdminController::class, 'approvePayment'])->name('payments.approve');
     Route::post('/payments/{payment}/reject', [AdminController::class, 'rejectPayment'])->name('payments.reject');
     Route::post('/users/{user}/extend-trial', [AdminController::class, 'extendTrial'])->name('users.extend-trial');
+    Route::post('/users/{user}/extend-premium', [AdminController::class, 'extendPremium'])->name('users.extend-premium');
+    Route::post('/users/{user}/cancel-premium', [AdminController::class, 'cancelPremium'])->name('users.cancel-premium');
     Route::patch('/users/{user}/plan', [AdminController::class, 'updateUserPlan'])->name('users.plan');
 });
 

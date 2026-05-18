@@ -297,6 +297,8 @@ class FinanceiroFlowTest extends TestCase
 
     public function test_admin_aprova_pagamento_e_libera_premium(): void
     {
+        $this->travelTo('2026-05-17 10:00:00');
+
         $admin = User::factory()->create([
             'plan' => 'admin',
             'subscription_status' => 'active',
@@ -327,5 +329,140 @@ class FinanceiroFlowTest extends TestCase
         ]);
 
         $this->assertTrue($user->fresh()->premium_until->isFuture());
+        $this->assertSame('2026-06-16', $user->fresh()->premium_until->toDateString());
+    }
+
+    public function test_usuario_comum_nao_acessa_admin(): void
+    {
+        $user = User::factory()->create([
+            'plan' => 'premium',
+            'subscription_status' => 'active',
+            'premium_until' => now()->addMonth(),
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('admin.index'))
+            ->assertForbidden();
+    }
+
+    public function test_admin_acessa_dashboard_financeiro(): void
+    {
+        $admin = User::factory()->create([
+            'plan' => 'admin',
+            'subscription_status' => 'active',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.index'))
+            ->assertOk()
+            ->assertSee('Controle de entradas')
+            ->assertSee('Receita recebida');
+    }
+
+    public function test_aprovacao_soma_trinta_dias_quando_usuario_ja_tem_premium(): void
+    {
+        $this->travelTo('2026-05-17 10:00:00');
+
+        $admin = User::factory()->create([
+            'plan' => 'admin',
+            'subscription_status' => 'active',
+        ]);
+        $user = User::factory()->create([
+            'plan' => 'premium',
+            'subscription_status' => 'active',
+            'premium_until' => now()->addDays(10),
+        ]);
+        $payment = Payment::create([
+            'user_id' => $user->id,
+            'valor' => 49.90,
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($admin)
+            ->post(route('admin.payments.approve', $payment))
+            ->assertRedirect();
+
+        $this->assertSame('2026-06-26', $user->fresh()->premium_until->toDateString());
+    }
+
+    public function test_admin_rejeita_pagamento_sem_alterar_plano_do_usuario(): void
+    {
+        $admin = User::factory()->create([
+            'plan' => 'admin',
+            'subscription_status' => 'active',
+        ]);
+        $user = User::factory()->create([
+            'plan' => 'premium',
+            'subscription_status' => 'active',
+            'premium_until' => now()->addDays(20),
+        ]);
+        $payment = Payment::create([
+            'user_id' => $user->id,
+            'valor' => 49.90,
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($admin)
+            ->post(route('admin.payments.reject', $payment), [
+                'observacao' => 'Comprovante ilegível',
+            ])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('payments', [
+            'id' => $payment->id,
+            'status' => 'rejected',
+            'observacao' => 'Comprovante ilegível',
+        ]);
+
+        $user->refresh();
+
+        $this->assertSame('premium', $user->plan);
+        $this->assertSame('active', $user->subscription_status);
+        $this->assertTrue($user->premium_until->isFuture());
+    }
+
+    public function test_admin_cards_calculam_receita_operacional(): void
+    {
+        $this->travelTo('2026-05-17 10:00:00');
+
+        $admin = User::factory()->create([
+            'plan' => 'admin',
+            'subscription_status' => 'active',
+        ]);
+        $trial = User::factory()->create([
+            'plan' => 'premium',
+            'subscription_status' => 'trial',
+            'trial_ends_at' => now()->addDays(7),
+        ]);
+        $starter = User::factory()->create([
+            'plan' => 'starter',
+            'subscription_status' => 'expired',
+        ]);
+
+        $approved = Payment::create([
+            'user_id' => $trial->id,
+            'valor' => 49.90,
+            'status' => 'approved',
+        ]);
+        $approved->forceFill(['updated_at' => now()->subDay()])->save();
+
+        Payment::create([
+            'user_id' => $starter->id,
+            'valor' => 99.80,
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.index'))
+            ->assertOk()
+            ->assertViewHas('stats', function (array $stats): bool {
+                return $stats['total_users'] === 3
+                    && $stats['trial_users'] === 1
+                    && $stats['starter_users'] === 1
+                    && $stats['pending_payments'] === 1
+                    && $stats['approved_payments_month'] === 1
+                    && (float) $stats['revenue_month'] === 49.9
+                    && (float) $stats['pending_revenue'] === 99.8;
+            });
     }
 }
