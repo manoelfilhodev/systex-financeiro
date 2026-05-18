@@ -47,6 +47,56 @@
         </div>
     </div>
 
+    <script id="dashboard-charts-data" type="application/json">
+        @json($chartData)
+    </script>
+
+    <div class="mt-6 grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
+        <section class="sx-card sx-card-hover overflow-hidden p-5">
+            <div class="mb-4 flex items-start justify-between gap-4">
+                <div>
+                    <h2 class="sx-theme-text text-lg font-black">Fluxo financeiro</h2>
+                    <p class="sx-theme-muted mt-1 text-sm">Entradas e saídas por dia no mês selecionado.</p>
+                </div>
+                <span class="sx-badge sx-badge-theme">Mensal</span>
+            </div>
+            <div id="chart-fluxo-financeiro" class="min-h-[330px]"></div>
+        </section>
+
+        <section class="sx-card sx-card-hover overflow-hidden p-5">
+            <div class="mb-4 flex items-start justify-between gap-4">
+                <div>
+                    <h2 class="sx-theme-text text-lg font-black">Distribuição</h2>
+                    <p class="sx-theme-muted mt-1 text-sm">Saídas agrupadas por categoria.</p>
+                </div>
+                <span class="sx-badge sx-badge-theme">Donut</span>
+            </div>
+            <div id="chart-categorias" class="min-h-[330px]"></div>
+        </section>
+
+        <section class="sx-card sx-card-hover overflow-hidden p-5">
+            <div class="mb-4 flex items-start justify-between gap-4">
+                <div>
+                    <h2 class="sx-theme-text text-lg font-black">Evolução do saldo</h2>
+                    <p class="sx-theme-muted mt-1 text-sm">Saldo acumulado dia a dia no período.</p>
+                </div>
+                <span class="sx-badge sx-badge-theme">Acumulado</span>
+            </div>
+            <div id="chart-saldo-acumulado" class="min-h-[330px]"></div>
+        </section>
+
+        <section class="sx-card sx-card-hover overflow-hidden p-5">
+            <div class="mb-4 flex items-start justify-between gap-4">
+                <div>
+                    <h2 class="sx-theme-text text-lg font-black">Saúde financeira</h2>
+                    <p class="sx-theme-muted mt-1 text-sm">Margem: saldo dividido por entradas.</p>
+                </div>
+                <span class="sx-badge sx-badge-theme">Gauge</span>
+            </div>
+            <div id="chart-saude-financeira" class="min-h-[330px]"></div>
+        </section>
+    </div>
+
     <div class="mt-6 grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
         <section class="sx-card overflow-hidden">
             <div class="sx-divider flex flex-col gap-3 border-b p-5 sm:flex-row sm:items-center sm:justify-between">

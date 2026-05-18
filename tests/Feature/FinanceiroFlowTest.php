@@ -50,6 +50,57 @@ class FinanceiroFlowTest extends TestCase
             ->assertDontSee('R$ 9.000,00');
     }
 
+    public function test_dashboard_envia_dados_dos_graficos_isolados_por_usuario(): void
+    {
+        $user = User::factory()->create();
+        $outroUsuario = User::factory()->create();
+
+        $categoria = Categoria::create([
+            'user_id' => $user->id,
+            'nome' => 'Infraestrutura',
+            'tipo' => 'saida',
+        ]);
+
+        Lancamento::create([
+            'user_id' => $user->id,
+            'categoria_id' => $categoria->id,
+            'tipo' => 'entrada',
+            'descricao' => 'Receita',
+            'valor' => 1000,
+            'data_lancamento' => '2026-05-01',
+        ]);
+
+        Lancamento::create([
+            'user_id' => $user->id,
+            'categoria_id' => $categoria->id,
+            'tipo' => 'saida',
+            'descricao' => 'Servidor',
+            'valor' => 250,
+            'data_lancamento' => '2026-05-02',
+        ]);
+
+        Lancamento::create([
+            'user_id' => $outroUsuario->id,
+            'tipo' => 'entrada',
+            'descricao' => 'Receita externa',
+            'valor' => 9000,
+            'data_lancamento' => '2026-05-01',
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('dashboard', ['mes' => '2026-05']))
+            ->assertOk()
+            ->assertViewHas('chartData', function (array $chartData): bool {
+                return $chartData['entradasPorDia'][0] === 1000.0
+                    && $chartData['saidasPorDia'][1] === 250.0
+                    && $chartData['saldoAcumuladoPorDia'][1] === 750.0
+                    && $chartData['categoriasSaida']->contains('Infraestrutura')
+                    && $chartData['valoresPorCategoria']->contains(250.0)
+                    && $chartData['margemPercentual'] === 75.0
+                    && ! in_array(9000.0, $chartData['entradasPorDia'], true);
+            });
+    }
+
     public function test_lancamento_nao_aceita_categoria_de_outro_usuario(): void
     {
         $user = User::factory()->create();
