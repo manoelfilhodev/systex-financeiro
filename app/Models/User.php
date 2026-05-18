@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'theme'])]
+#[Fillable(['name', 'email', 'password', 'theme', 'plan', 'subscription_status', 'trial_ends_at', 'premium_until'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -29,6 +29,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'trial_ends_at' => 'datetime',
+            'premium_until' => 'datetime',
         ];
     }
 
@@ -40,6 +42,55 @@ class User extends Authenticatable
     public function lancamentos(): HasMany
     {
         return $this->hasMany(Lancamento::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->plan === 'admin';
+    }
+
+    public function hasActiveTrial(): bool
+    {
+        return $this->subscription_status === 'trial'
+            && $this->trial_ends_at
+            && $this->trial_ends_at->isFuture();
+    }
+
+    public function hasActivePremium(): bool
+    {
+        return $this->subscription_status === 'active'
+            && $this->premium_until
+            && $this->premium_until->isFuture();
+    }
+
+    public function hasPremiumAccess(): bool
+    {
+        return $this->isAdmin() || $this->hasActiveTrial() || $this->hasActivePremium();
+    }
+
+    public function normalizeSubscriptionState(): void
+    {
+        if ($this->isAdmin()) {
+            return;
+        }
+
+        if (
+            $this->subscription_status === 'trial'
+            && $this->trial_ends_at
+            && $this->trial_ends_at->isPast()
+            && blank($this->premium_until)
+        ) {
+            $this->forceFill([
+                'plan' => 'starter',
+                'subscription_status' => 'expired',
+                'theme' => 'systex-default',
+            ])->save();
+        }
     }
 
     protected function theme(): Attribute

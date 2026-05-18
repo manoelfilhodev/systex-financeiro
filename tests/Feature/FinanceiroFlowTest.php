@@ -4,8 +4,11 @@ namespace Tests\Feature;
 
 use App\Models\Categoria;
 use App\Models\Lancamento;
+use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class FinanceiroFlowTest extends TestCase
@@ -148,7 +151,11 @@ class FinanceiroFlowTest extends TestCase
 
     public function test_usuario_pode_salvar_tema_visual(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create([
+            'plan' => 'premium',
+            'subscription_status' => 'active',
+            'premium_until' => now()->addMonth(),
+        ]);
 
         $this->actingAs($user)
             ->post(route('theme.update'), [
@@ -196,6 +203,9 @@ class FinanceiroFlowTest extends TestCase
     public function test_tema_visual_e_individual_por_usuario(): void
     {
         $user = User::factory()->create([
+            'plan' => 'premium',
+            'subscription_status' => 'active',
+            'premium_until' => now()->addMonth(),
             'theme' => 'aurora',
         ]);
         $outroUsuario = User::factory()->create([
@@ -217,5 +227,105 @@ class FinanceiroFlowTest extends TestCase
             'id' => $outroUsuario->id,
             'theme' => 'office-clean',
         ]);
+    }
+
+    public function test_trial_expirado_vira_starter_sem_perder_acesso(): void
+    {
+        $user = User::factory()->create([
+            'plan' => 'premium',
+            'subscription_status' => 'trial',
+            'trial_ends_at' => now()->subDay(),
+            'premium_until' => null,
+            'theme' => 'cyberpunk',
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('Seu trial expirou.');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'plan' => 'starter',
+            'subscription_status' => 'expired',
+            'theme' => 'systex-default',
+        ]);
+    }
+
+    public function test_starter_nao_aplica_tema_premium(): void
+    {
+        $user = User::factory()->create([
+            'plan' => 'starter',
+            'subscription_status' => 'expired',
+            'theme' => 'systex-default',
+        ]);
+
+        $this->actingAs($user)
+            ->post(route('theme.update'), [
+                'theme' => 'pink-neon',
+            ])
+            ->assertSessionHasErrors('theme');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'theme' => 'systex-default',
+        ]);
+    }
+
+    public function test_usuario_envia_comprovante_pix_manual(): void
+    {
+        Storage::fake('local');
+
+        $user = User::factory()->create([
+            'plan' => 'starter',
+            'subscription_status' => 'expired',
+        ]);
+
+        $this->actingAs($user)
+            ->post(route('payments.store'), [
+                'comprovante' => UploadedFile::fake()->image('pix.png'),
+                'observacao' => 'Pagamento realizado',
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect();
+
+        $payment = Payment::where('user_id', $user->id)->first();
+
+        $this->assertSame('pending', $payment->status);
+        Storage::disk('local')->assertExists($payment->comprovante_path);
+    }
+
+    public function test_admin_aprova_pagamento_e_libera_premium(): void
+    {
+        $admin = User::factory()->create([
+            'plan' => 'admin',
+            'subscription_status' => 'active',
+        ]);
+        $user = User::factory()->create([
+            'plan' => 'starter',
+            'subscription_status' => 'pending',
+        ]);
+        $payment = Payment::create([
+            'user_id' => $user->id,
+            'valor' => 49.90,
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($admin)
+            ->post(route('admin.payments.approve', $payment))
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('payments', [
+            'id' => $payment->id,
+            'status' => 'approved',
+        ]);
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'plan' => 'premium',
+            'subscription_status' => 'active',
+        ]);
+
+        $this->assertTrue($user->fresh()->premium_until->isFuture());
     }
 }

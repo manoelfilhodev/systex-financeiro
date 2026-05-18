@@ -5,8 +5,12 @@
         ['label' => 'Categorias', 'route' => 'categorias.index', 'active' => 'categorias.*', 'icon' => 'M4 7h6v6H4zM14 7h6v6h-6zM4 15h6v4H4zM14 15h6v4h-6z'],
         ['label' => 'Relatórios', 'route' => 'dashboard', 'active' => 'relatorios.*', 'icon' => 'M5 19V9m7 10V5m7 14v-7'],
         ['label' => 'Metas', 'route' => 'dashboard', 'active' => 'metas.*', 'icon' => 'M12 21a9 9 0 1 0-9-9m9 5a5 5 0 1 0-5-5m5 1h.01'],
+        ['label' => 'Premium', 'route' => 'premium.index', 'active' => 'premium.*', 'icon' => 'M12 3l2.7 5.47 6.03.88-4.36 4.25 1.03 6L12 16.77 6.6 19.6l1.03-6-4.36-4.25 6.03-.88z'],
         ['label' => 'Configurações', 'route' => 'profile.edit', 'active' => 'profile.*', 'icon' => 'M12 8a4 4 0 1 0 0 8a4 4 0 0 0 0-8zM4 12h2m12 0h2M12 4v2m0 12v2'],
     ];
+    if (auth()->user()->isAdmin()) {
+        $navItems[] = ['label' => 'Admin', 'route' => 'admin.index', 'active' => 'admin.*', 'icon' => 'M12 3l8 4v5c0 5-3.4 8.5-8 9-4.6-.5-8-4-8-9V7z'];
+    }
     $themes = config('themes', []);
     $currentTheme = array_key_exists(auth()->user()->theme, $themes) ? auth()->user()->theme : 'systex-default';
     $initials = collect(explode(' ', auth()->user()->name))->filter()->take(2)->map(fn ($part) => mb_substr($part, 0, 1))->join('');

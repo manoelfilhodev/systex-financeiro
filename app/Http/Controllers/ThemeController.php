@@ -10,13 +10,18 @@ class ThemeController extends Controller
 {
     public function update(Request $request): RedirectResponse
     {
-        $themes = array_keys(config('themes', []));
+        $user = $request->user();
+        $user->normalizeSubscriptionState();
+
+        $themes = $user->hasPremiumAccess()
+            ? array_keys(config('themes', []))
+            : ['systex-default'];
 
         $validated = $request->validate([
             'theme' => ['required', 'string', Rule::in($themes)],
         ]);
 
-        $request->user()->update([
+        $user->update([
             'theme' => $validated['theme'],
         ]);
 

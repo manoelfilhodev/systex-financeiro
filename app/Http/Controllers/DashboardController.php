@@ -71,8 +71,11 @@ class DashboardController extends Controller
             ? round(($saldoMes / $totalEntradas) * 100, 1)
             : 0;
 
+        $hasPremiumAccess = $request->user()->hasPremiumAccess();
+
         return view('dashboard', [
             'mes' => $mes,
+            'hasPremiumAccess' => $hasPremiumAccess,
             'totalEntradas' => $totalEntradas,
             'totalSaidas' => $totalSaidas,
             'saldoMes' => $saldoMes,

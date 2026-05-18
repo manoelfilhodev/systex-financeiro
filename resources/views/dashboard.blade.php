@@ -47,55 +47,68 @@
         </div>
     </div>
 
-    <script id="dashboard-charts-data" type="application/json">
-        @json($chartData)
-    </script>
+    @if ($hasPremiumAccess)
+        <script id="dashboard-charts-data" type="application/json">
+            @json($chartData)
+        </script>
 
-    <div class="mt-6 grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
-        <section class="sx-card sx-card-hover overflow-hidden p-5">
-            <div class="mb-4 flex items-start justify-between gap-4">
-                <div>
-                    <h2 class="sx-theme-text text-lg font-black">Fluxo financeiro</h2>
-                    <p class="sx-theme-muted mt-1 text-sm">Entradas e saídas por dia no mês selecionado.</p>
+        <div class="mt-6 grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
+            <section class="sx-card sx-card-hover overflow-hidden p-5">
+                <div class="mb-4 flex items-start justify-between gap-4">
+                    <div>
+                        <h2 class="sx-theme-text text-lg font-black">Fluxo financeiro</h2>
+                        <p class="sx-theme-muted mt-1 text-sm">Entradas e saídas por dia no mês selecionado.</p>
+                    </div>
+                    <span class="sx-badge sx-badge-theme">Premium</span>
                 </div>
-                <span class="sx-badge sx-badge-theme">Mensal</span>
-            </div>
-            <div id="chart-fluxo-financeiro" class="min-h-[330px]"></div>
-        </section>
+                <div id="chart-fluxo-financeiro" class="min-h-[330px]"></div>
+            </section>
 
-        <section class="sx-card sx-card-hover overflow-hidden p-5">
-            <div class="mb-4 flex items-start justify-between gap-4">
-                <div>
-                    <h2 class="sx-theme-text text-lg font-black">Distribuição</h2>
-                    <p class="sx-theme-muted mt-1 text-sm">Saídas agrupadas por categoria.</p>
+            <section class="sx-card sx-card-hover overflow-hidden p-5">
+                <div class="mb-4 flex items-start justify-between gap-4">
+                    <div>
+                        <h2 class="sx-theme-text text-lg font-black">Distribuição</h2>
+                        <p class="sx-theme-muted mt-1 text-sm">Saídas agrupadas por categoria.</p>
+                    </div>
+                    <span class="sx-badge sx-badge-theme">Donut</span>
                 </div>
-                <span class="sx-badge sx-badge-theme">Donut</span>
-            </div>
-            <div id="chart-categorias" class="min-h-[330px]"></div>
-        </section>
+                <div id="chart-categorias" class="min-h-[330px]"></div>
+            </section>
 
-        <section class="sx-card sx-card-hover overflow-hidden p-5">
-            <div class="mb-4 flex items-start justify-between gap-4">
-                <div>
-                    <h2 class="sx-theme-text text-lg font-black">Evolução do saldo</h2>
-                    <p class="sx-theme-muted mt-1 text-sm">Saldo acumulado dia a dia no período.</p>
+            <section class="sx-card sx-card-hover overflow-hidden p-5">
+                <div class="mb-4 flex items-start justify-between gap-4">
+                    <div>
+                        <h2 class="sx-theme-text text-lg font-black">Evolução do saldo</h2>
+                        <p class="sx-theme-muted mt-1 text-sm">Saldo acumulado dia a dia no período.</p>
+                    </div>
+                    <span class="sx-badge sx-badge-theme">Acumulado</span>
                 </div>
-                <span class="sx-badge sx-badge-theme">Acumulado</span>
-            </div>
-            <div id="chart-saldo-acumulado" class="min-h-[330px]"></div>
-        </section>
+                <div id="chart-saldo-acumulado" class="min-h-[330px]"></div>
+            </section>
 
-        <section class="sx-card sx-card-hover overflow-hidden p-5">
-            <div class="mb-4 flex items-start justify-between gap-4">
-                <div>
-                    <h2 class="sx-theme-text text-lg font-black">Saúde financeira</h2>
-                    <p class="sx-theme-muted mt-1 text-sm">Margem: saldo dividido por entradas.</p>
+            <section class="sx-card sx-card-hover overflow-hidden p-5">
+                <div class="mb-4 flex items-start justify-between gap-4">
+                    <div>
+                        <h2 class="sx-theme-text text-lg font-black">Saúde financeira</h2>
+                        <p class="sx-theme-muted mt-1 text-sm">Margem: saldo dividido por entradas.</p>
+                    </div>
+                    <span class="sx-badge sx-badge-theme">Gauge</span>
                 </div>
-                <span class="sx-badge sx-badge-theme">Gauge</span>
+                <div id="chart-saude-financeira" class="min-h-[330px]"></div>
+            </section>
+        </div>
+    @else
+        <section class="sx-card mt-6 p-6">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <span class="sx-badge sx-badge-theme">Starter</span>
+                    <h2 class="sx-theme-text mt-4 text-2xl font-black">Seu trial expirou.</h2>
+                    <p class="sx-theme-muted mt-2 max-w-2xl text-sm leading-6">Você voltou para o plano Starter. Seus dados continuam seguros. Os gráficos premium e todos os temas ficam disponíveis no Premium.</p>
+                </div>
+                <a href="{{ route('premium.index') }}" class="sx-button">Ver Premium</a>
             </div>
-            <div id="chart-saude-financeira" class="min-h-[330px]"></div>
         </section>
-    </div>
+    @endif
 
     <div class="mt-6 grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
         <section class="sx-card overflow-hidden">
